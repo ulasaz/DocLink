@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.DatabaseAccess", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.Core", "DocLink.Core\DocLink.Core.csproj", "{6BC79B97-7CCA-4CB4-AF8E-1D455F1D3DE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.Tests", "DocLink.Tests\DocLink.Tests.csproj", "{F422418D-3A7D-4A73-B564-6A1764F9A17A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.UnitTests", "DocLink.UnitTests\DocLink.UnitTests.csproj", "{F422418D-3A7D-4A73-B564-6A1764F9A17A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
