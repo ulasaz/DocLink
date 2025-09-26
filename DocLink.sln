@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.WebAPI", "DocLink.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.Services", "DocLink.Services\DocLink.Services.csproj", "{72064F00-6748-4235-9BC7-8FEE4288DF1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.Data", "DocLink.Data\DocLink.Data.csproj", "{BFE6A1A1-DB6B-4DF2-B777-33094B196AAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.DatabaseAccess", "DocLink.DatabaseAccess\DocLink.DatabaseAccess.csproj", "{BFE6A1A1-DB6B-4DF2-B777-33094B196AAA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.Core", "DocLink.Core\DocLink.Core.csproj", "{6BC79B97-7CCA-4CB4-AF8E-1D455F1D3DE2}"
 EndProject
