@@ -1,0 +1,10 @@
+namespace DocLink.Core.Models;
+
+public class Appointment
+{
+    public Guid Id { get; set; }
+    public DateTime Time { get; set; }
+    
+    public Patient? Patient { get; set; }
+    public Specialist? Specialist { get; set; }
+}
