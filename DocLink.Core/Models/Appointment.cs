@@ -6,4 +6,5 @@ public class Appointment
     public DateTime Time { get; set; }
     
     public PatientProfile? PatientProfile { get; set; }
+    public DoctorProfile? DoctorProfile { get; set; }
 }
