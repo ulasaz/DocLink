@@ -6,5 +6,5 @@ public class Offer
     public string? Title { get; set; }
     public decimal Price { get; set; }
     
-    public DoctorProfile? DoctorProfile { get; set; }
+    public Specialist? Specialist { get; set; }
 }

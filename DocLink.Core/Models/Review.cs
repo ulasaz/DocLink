@@ -7,9 +7,9 @@ public class Review
     public string? Comment { get; set; }
     
     public Guid PatientId { get; set; }
-    public PatientProfile? PatientProfile { get; set; }
+    public Patient? Patient { get; set; }
     
-    public Guid DoctorId { get; set; }
-    public DoctorProfile? DoctorProfile { get; set; }
+    public Guid SpecialistId { get; set; }
+    public Specialist? Specialist { get; set; }
     
 }
