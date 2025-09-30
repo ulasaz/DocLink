@@ -6,5 +6,8 @@ public class Appointment
     public DateTime Time { get; set; }
     
     public Patient? Patient { get; set; }
+    public Guid PatientId { get; set; }
+    
     public Specialist? Specialist { get; set; }
+    public Guid SpecialistId { get; set; }
 }

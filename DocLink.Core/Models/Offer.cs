@@ -7,4 +7,5 @@ public class Offer
     public decimal Price { get; set; }
     
     public Specialist? Specialist { get; set; }
+    public Guid SpecialistId { get; set; }
 }
