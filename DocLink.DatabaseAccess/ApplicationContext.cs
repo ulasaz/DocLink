@@ -1,5 +1,4 @@
 using DocLink.Core.Models;
-using DocLink.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

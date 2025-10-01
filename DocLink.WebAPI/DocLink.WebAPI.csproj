@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DocLink.DatabaseAccess\DocLink.DatabaseAccess.csproj" />
+      <ProjectReference Include="..\DocLink.Services\DocLink.Services.csproj" />
     </ItemGroup>
 
 </Project>
