@@ -26,4 +26,8 @@
       <ProjectReference Include="..\DocLink.Core\DocLink.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Repositories\" />
+    </ItemGroup>
+
 </Project>

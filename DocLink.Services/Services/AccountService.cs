@@ -1,57 +1,59 @@
 using DocLink.Core.Models;
-using DocLink.Data.Repositories;
 using DocLink.Services.DTO_s;
 using DocLink.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace DocLink.Services.Services;
 
 public class AccountService : IAccountService
 {
-    private AccountRepository _accountRepository;
+    private readonly UserManager<Account> _userManager;
+    private readonly SignInManager<Account> _signInManager;
 
-    public AccountService(AccountRepository accountRepository)
+    public AccountService(UserManager<Account> userManager, SignInManager<Account> signInManager)
     {
-        _accountRepository = accountRepository;
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
-    public async Task<Account?> RegisterUserAsync(RegistrationRequestModel requestModel)
+    public async Task<RegistrationResponseModel> RegisterAsync(RegistrationRequestModel requestModel)
     {
         var account = new Account
         {
             FirstName = requestModel.FirstName,
             LastName = requestModel.LastName,
-            PasswordHash = requestModel.Password,
-            Email = requestModel.Email
+            Email = requestModel.Email,
+            PasswordHash = requestModel.PasswordHash
         };
-        await _accountRepository.AddAsync(account);
+
+        var result = await _userManager.CreateAsync(account, requestModel.PasswordHash);
         
-        return account;
-    }
-    
-    public async Task<string> LoginAsync(LoginRequestModel requestModel)
-    {
-        await _accountRepository.GetByEmailAsync(requestModel.Email);
-        string token = "FAKE_TOKEN_FOR_NOW";
-        return token;
+        if (!result.Succeeded)
+        {
+            var errors = result.Errors.Select(e => e.Description);
+            return new RegistrationResponseModel { Errors = errors };
+        }
+
+        return new RegistrationResponseModel {IsSuccessful = true};
     }
 
-    public async Task<Account?> GetUserByIdAsync(Guid id)
+    public async Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequestModel)
     {
-       return await _accountRepository.GetByIdAsync(id);
-    }
+        var account =  await _userManager.FindByEmailAsync(loginRequestModel.Email);
+        
+        if(account is null)
+            return new LoginResponseModel { Errors = ["Invalid login attempt"] };
 
-    public async Task<bool> DeleteUserAsync(Guid id)
-    {
-        return await _accountRepository.DeleteAsync(id);
-    }
+        var result = await _signInManager.PasswordSignInAsync(
+            account, 
+            loginRequestModel.Password,
+            isPersistent: false,   
+            lockoutOnFailure: false 
+        );
+        
+        if (!result.Succeeded)
+            return new LoginResponseModel { Errors = ["Invalid login attempt"] };
 
-    public async Task<Account?> GetUserByEmailAsync(string email)
-    {
-        return await _accountRepository.GetByEmailAsync(email);
-    }
-
-    public async Task<Account?> UpdateAsync(Account account)
-    {
-        return await _accountRepository.UpdateAsync(account);
+        return new LoginResponseModel {IsSuccessful = true, Token = "TOKEN"};
     }
 }

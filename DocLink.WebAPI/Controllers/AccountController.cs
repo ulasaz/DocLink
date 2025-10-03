@@ -1,5 +1,7 @@
+using DocLink.Core.Models;
 using DocLink.Services.DTO_s;
-using DocLink.Services.Services;
+using DocLink.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocLink.WebAPI.Controllers;
@@ -8,35 +10,38 @@ namespace DocLink.WebAPI.Controllers;
 [Route("api/auth")]
 public class AccountController : ControllerBase
 {
-    private AccountService _accountService;
+    private IAccountService _accountService;
 
-    public AccountController(AccountService accountService)
+    public AccountController(IAccountService accountService)
     {
         _accountService = accountService;
     }
 
     [HttpPost("/register")]
-    public async Task<ActionResult<RegistrationRespondModel>> RegisterUserAsync([FromBody] RegistrationRequestModel requestModel)
+    public async Task<ActionResult<RegistrationResponseModel>> RegisterUserAsync([FromBody] RegistrationRequestModel requestModel)
     {
-        var account = await _accountService.RegisterUserAsync(requestModel);
-        var respondModel = new RegistrationRespondModel();
-        if (account == null)
-            respondModel.IsSuccessful = false;
-        respondModel.IsSuccessful = true;
+        if (requestModel == null)
+            return BadRequest(); 
+        
+        var result = await _accountService.RegisterAsync(requestModel);
 
-        return Ok(respondModel);
+       if (!result.IsSuccessful)
+           return BadRequest(result.Errors);
+       return Ok(result.IsSuccessful);
     }
     
     [HttpPost("/login")]
-    public async Task<ActionResult<LoginRespondModel>> LoginUserAync([FromBody] LoginRequestModel requestModel)
+    public async Task<ActionResult<LoginResponseModel>> LoginUserAsync([FromBody] LoginRequestModel requestModel)
     {
-        var token = await _accountService.LoginAsync(requestModel);
-        var respondModel = new LoginRespondModel()
+        if (requestModel == null)
+            return BadRequest();
+        var result = await _accountService.LoginAsync(requestModel);
+        
+        if (!result.IsSuccessful)
         {
-            IsSuccessful = true,
-            Token = token
-        };
-
-        return Ok(respondModel);
+            return Unauthorized(new LoginResponseModel { Errors = ["Invalid login attempt"] });
+        }
+        return Ok(new LoginResponseModel {IsSuccessful = true, Token = "TOKEN"});
+        
     }
 }

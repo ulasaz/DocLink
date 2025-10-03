@@ -5,10 +5,6 @@ namespace DocLink.Services.Interfaces;
 
 public interface IAccountService
 {
-    Task<Account?> RegisterUserAsync(RegistrationRequestModel requestModel);
-    Task<string> LoginAsync(LoginRequestModel requestModel);
-    Task<Account?> GetUserByIdAsync(Guid id);
-    Task<bool> DeleteUserAsync(Guid id);
-    Task<Account?> GetUserByEmailAsync(string email);
-    Task<Account?> UpdateAsync(Account account);
+    Task<RegistrationResponseModel> RegisterAsync(RegistrationRequestModel requestModel);
+    Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequestModel);
 }
