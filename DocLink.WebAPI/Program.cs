@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<ApplicationContext>(options =>
+    options.UseSqlite("Data Source=.DocLink.db"));
+
 builder.Services.AddIdentity<Account, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
-
-builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseSqlite("Data Source=.DocLink.db"));
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 
