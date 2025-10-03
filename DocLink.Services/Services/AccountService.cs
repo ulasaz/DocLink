@@ -23,15 +23,15 @@ public class AccountService : IAccountService
             FirstName = requestModel.FirstName,
             LastName = requestModel.LastName,
             Email = requestModel.Email,
-            PasswordHash = requestModel.PasswordHash
+            UserName = requestModel.Email
         };
 
-        var result = await _userManager.CreateAsync(account, requestModel.PasswordHash);
+        var result = await _userManager.CreateAsync(account, requestModel.Password);
         
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(e => e.Description);
-            return new RegistrationResponseModel { Errors = errors };
+            return new RegistrationResponseModel { Errors = errors, IsSuccessful = false};
         }
 
         return new RegistrationResponseModel {IsSuccessful = true};
@@ -52,7 +52,7 @@ public class AccountService : IAccountService
         );
         
         if (!result.Succeeded)
-            return new LoginResponseModel { Errors = ["Invalid login attempt"] };
+            return new LoginResponseModel { Errors = ["Invalid login attempt"], IsSuccessful = false};
 
         return new LoginResponseModel {IsSuccessful = true, Token = "TOKEN"};
     }
