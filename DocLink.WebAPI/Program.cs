@@ -8,8 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine("Connection string:");
+Console.WriteLine(builder.Configuration.GetConnectionString("Postgres"));
+
 builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseSqlite("Data Source=.DocLink.db"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
 builder.Services.AddIdentity<Account, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationContext>()
