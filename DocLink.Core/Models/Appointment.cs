@@ -4,6 +4,7 @@ public class Appointment
 {
     public Guid Id { get; set; }
     public DateTime Time { get; set; }
+    public string? Status { get; set; }
     
     public Patient? Patient { get; set; }
     public Guid PatientId { get; set; }
