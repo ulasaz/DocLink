@@ -22,7 +22,7 @@
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ee8ef6fe_002Df420_002D45cd_002D9f24_002D1ede667c2dec/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;DocLink.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Project Location="/Users/wlad/RiderProjects/DocLink/DocLink.Tests" Presentation="&amp;lt;DocLink.Tests&amp;gt;" /&gt;
+  &lt;Project Location="/Users/wlad/RiderProjects/DocLink/DocLink.UnitTests" Presentation="&amp;lt;DocLink.UnitTests&amp;gt;" /&gt;
 &lt;/SessionState&gt;</s:String>
 	
 	

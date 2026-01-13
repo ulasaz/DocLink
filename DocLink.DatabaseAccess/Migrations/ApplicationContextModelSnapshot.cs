@@ -17,6 +17,7 @@ namespace DocLink.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("public")
                 .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -95,7 +96,7 @@ namespace DocLink.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Accounts", "public");
 
                     b.UseTptMappingStrategy();
                 });
@@ -104,6 +105,9 @@ namespace DocLink.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("OfferId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("PatientId")
@@ -120,33 +124,36 @@ namespace DocLink.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OfferId");
+
                     b.HasIndex("PatientId");
 
                     b.HasIndex("SpecialistId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", "public");
                 });
 
-            modelBuilder.Entity("DocLink.Core.Models.DoctorSchedule", b =>
+            modelBuilder.Entity("DocLink.Core.Models.Location", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<TimeOnly>("AvailableFrom")
-                        .HasColumnType("time without time zone");
+                    b.Property<string>("City")
+                        .HasColumnType("text");
 
-                    b.Property<TimeOnly>("AvailableTo")
-                        .HasColumnType("time without time zone");
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("SpecialistId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Post")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpecialistId");
-
-                    b.ToTable("DoctorSchedules");
+                    b.ToTable("Location", "public");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Log", b =>
@@ -169,7 +176,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("IdAccount");
 
-                    b.ToTable("Logs");
+                    b.ToTable("Logs", "public");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Message", b =>
@@ -197,7 +204,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("IdSender");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", "public");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Offer", b =>
@@ -209,17 +216,33 @@ namespace DocLink.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("SpecialistId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.ToTable("Offers", "public");
+                });
+
+            modelBuilder.Entity("DocLink.Core.Models.OfferSpecialist", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SpecialistId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferId");
+
                     b.HasIndex("SpecialistId");
 
-                    b.ToTable("Offers");
+                    b.ToTable("OfferSpecialist", "public");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Review", b =>
@@ -246,7 +269,50 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("SpecialistId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", "public");
+                });
+
+            modelBuilder.Entity("DocLink.Core.Models.SpecialistLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SpecialistId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("SpecialistId");
+
+                    b.ToTable("SpecialistLocation", "public");
+                });
+
+            modelBuilder.Entity("DocLink.Core.Models.SpecialistSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeOnly>("AvailableFrom")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeOnly>("AvailableTo")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<Guid>("SpecialistId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpecialistId");
+
+                    b.ToTable("DoctorSchedules", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -273,7 +339,7 @@ namespace DocLink.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -297,7 +363,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -321,7 +387,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -342,7 +408,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
@@ -357,7 +423,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", "identity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -376,7 +442,7 @@ namespace DocLink.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", "identity");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Patient", b =>
@@ -386,7 +452,7 @@ namespace DocLink.Data.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients", "public");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Specialist", b =>
@@ -396,11 +462,15 @@ namespace DocLink.Data.Migrations
                     b.Property<string>("AboutMe")
                         .HasColumnType("text");
 
-                    b.ToTable("Specialists", (string)null);
+                    b.ToTable("Specialists", "public");
                 });
 
             modelBuilder.Entity("DocLink.Core.Models.Appointment", b =>
                 {
+                    b.HasOne("DocLink.Core.Models.Offer", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferId");
+
                     b.HasOne("DocLink.Core.Models.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
@@ -413,18 +483,9 @@ namespace DocLink.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Offer");
+
                     b.Navigation("Patient");
-
-                    b.Navigation("Specialist");
-                });
-
-            modelBuilder.Entity("DocLink.Core.Models.DoctorSchedule", b =>
-                {
-                    b.HasOne("DocLink.Core.Models.Specialist", "Specialist")
-                        .WithMany()
-                        .HasForeignKey("SpecialistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Specialist");
                 });
@@ -459,13 +520,21 @@ namespace DocLink.Data.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("DocLink.Core.Models.Offer", b =>
+            modelBuilder.Entity("DocLink.Core.Models.OfferSpecialist", b =>
                 {
+                    b.HasOne("DocLink.Core.Models.Offer", "Offer")
+                        .WithMany("Specialists")
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DocLink.Core.Models.Specialist", "Specialist")
-                        .WithMany("Offers")
+                        .WithMany("OffersSpecialists")
                         .HasForeignKey("SpecialistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Offer");
 
                     b.Navigation("Specialist");
                 });
@@ -485,6 +554,36 @@ namespace DocLink.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Patient");
+
+                    b.Navigation("Specialist");
+                });
+
+            modelBuilder.Entity("DocLink.Core.Models.SpecialistLocation", b =>
+                {
+                    b.HasOne("DocLink.Core.Models.Location", "Location")
+                        .WithMany("Specialists")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DocLink.Core.Models.Specialist", "Specialist")
+                        .WithMany("SpecialistLocations")
+                        .HasForeignKey("SpecialistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Specialist");
+                });
+
+            modelBuilder.Entity("DocLink.Core.Models.SpecialistSchedule", b =>
+                {
+                    b.HasOne("DocLink.Core.Models.Specialist", "Specialist")
+                        .WithMany("Schedules")
+                        .HasForeignKey("SpecialistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Specialist");
                 });
@@ -558,6 +657,16 @@ namespace DocLink.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DocLink.Core.Models.Location", b =>
+                {
+                    b.Navigation("Specialists");
+                });
+
+            modelBuilder.Entity("DocLink.Core.Models.Offer", b =>
+                {
+                    b.Navigation("Specialists");
+                });
+
             modelBuilder.Entity("DocLink.Core.Models.Patient", b =>
                 {
                     b.Navigation("Appointments");
@@ -569,9 +678,13 @@ namespace DocLink.Data.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("Offers");
+                    b.Navigation("OffersSpecialists");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("Schedules");
+
+                    b.Navigation("SpecialistLocations");
                 });
 #pragma warning restore 612, 618
         }

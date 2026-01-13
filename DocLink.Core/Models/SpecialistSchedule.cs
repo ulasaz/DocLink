@@ -1,6 +1,6 @@
 namespace DocLink.Core.Models;
 
-public class DoctorSchedule
+public class SpecialistSchedule
 {
     public Guid Id { get; set; }
 

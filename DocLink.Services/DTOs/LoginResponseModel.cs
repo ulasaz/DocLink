@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices.JavaScript;
+using System.Text.Json.Serialization;
+using DocLink.Core.Models;
 
 namespace DocLink.Services.DTO_s;
 
