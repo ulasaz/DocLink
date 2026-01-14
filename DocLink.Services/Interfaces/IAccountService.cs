@@ -7,4 +7,6 @@ public interface IAccountService
 {
     Task<RegistrationResponseModel> RegisterAsync(RegistrationRequestModel requestModel);
     Task<LoginResponseModel> LoginAsync(LoginRequestModel loginRequestModel);
+    Task<Account> GetAccountByEmail(string email);
+    Task<PatientProfileDto> GetPatientProfileAsync(string userId);
 }

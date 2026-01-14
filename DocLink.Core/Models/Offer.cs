@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace DocLink.Core.Models;
 
 public class Offer
@@ -6,6 +8,5 @@ public class Offer
     public string? Title { get; set; }
     public decimal Price { get; set; }
     
-    public Specialist? Specialist { get; set; }
-    public Guid SpecialistId { get; set; }
+    public ICollection<OfferSpecialist> Specialists { get; set; } = new List<OfferSpecialist>();
 }

@@ -1,0 +1,552 @@
+/* =========================================
+   1. Глобальные переменные и настройки
+   ========================================= */
+:root {
+  --primary: #00b39b;        /* Фирменный мятный */
+  --primary-dark: #009985;   /* Темный мятный (ховер) */
+  --primary-light: #e0f2f1;  /* Светлый фон для акцентов */
+
+  --bg-body: #f0f2f5;        /* Фон всей страницы */
+  --bg-card: #ffffff;        /* Фон карточек */
+
+  --text-main: #1f2937;      /* Почти черный */
+  --text-muted: #6b7280;     /* Серый текст */
+  --text-light: #9ca3af;     /* Светло-серый */
+
+  --border: #e5e7eb;         /* Тонкие рамки */
+
+  /* Мягкая, дорогая тень */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif; /* Более современный шрифт */
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* Ограничитель ширины */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* =========================================
+   2. Шапка (Header)
+   ========================================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 16px 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 30px;
+  position: sticky;
+  top: 10px;
+  z-index: 1000; /* Чтобы шапка была поверх карты при скролле */
+}
+
+.logo {
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 1.6rem;
+  text-decoration: none;
+  cursor: pointer;
+  letter-spacing: -0.5px;
+}
+
+.user-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  font-size: 0.95rem;
+}
+
+.nav-link:hover { color: var(--primary); }
+
+.logout-btn {
+  background: #fff1f2;
+  border: 1px solid #fda4af;
+  color: #e11d48;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #e11d48;
+  color: white;
+  border-color: #e11d48;
+}
+
+/* =========================================
+   3. Сетка врачей (Поиск)
+   ========================================= */
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.doctor-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+.doctor-card-content {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.avatar-circle {
+  width: 64px;
+  height: 64px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.action-btn:hover { background: var(--primary-dark); }
+
+/* =========================================
+   4. Страница Профиля (Структура)
+   ========================================= */
+.back-link {
+  cursor: pointer;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.back-link:hover { color: var(--primary); }
+
+.profile-container {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr; /* Правая колонка чуть шире для календаря */
+  gap: 30px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .profile-container { grid-template-columns: 1fr; }
+}
+
+.section-card {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 25px;
+  border: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  margin: 0 0 20px 0;
+  color: var(--text-main);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================================
+   5. Шапка профиля
+   ========================================= */
+.profile-header-card {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 25px;
+  border: 1px solid var(--border);
+}
+
+.profile-avatar-large {
+  width: 110px;
+  height: 110px;
+  background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 55px;
+  border: 4px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.profile-info h1 {
+  margin: 0 0 5px 0;
+  font-size: 2rem;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+.star-rating {
+  color: #fbbf24; /* Amber-400 */
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+/* =========================================
+   6. Услуги (Services)
+   ========================================= */
+.services-list { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.service-tag {
+  background: white;
+  color: var(--text-main);
+  padding: 10px 18px;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  border: 1px solid var(--border);
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  transition: all 0.2s;
+}
+
+.service-tag:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.price-tag {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+/* =========================================
+   7. ЛОКАЦИИ И КАРТА (ОБНОВЛЕНО)
+   ========================================= */
+.location-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.location-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--primary);
+}
+
+.location-icon {
+  font-size: 1.2rem;
+  margin-top: 2px;
+}
+
+.map-wrapper {
+  height: 320px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+  position: relative;
+  z-index: 1; /* Чтобы не перекрывало шапку при скролле */
+}
+
+/* =========================================
+   8. ОТЗЫВЫ (ОБНОВЛЕНО - КРАСИВО)
+   ========================================= */
+.reviews-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-card {
+  background: #f9fafb; /* Очень светлый серый фон */
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reviewer-avatar {
+  width: 40px;
+  height: 40px;
+  background: #e5e7eb;
+  color: #6b7280;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.reviewer-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.review-stars {
+  color: #fbbf24;
+  font-size: 0.9rem;
+}
+
+.review-content {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  position: relative;
+  padding-left: 10px;
+  border-left: 2px solid var(--border);
+}
+
+/* =========================================
+   9. Сайдбар бронирования (Справа)
+   ========================================= */
+.booking-sidebar {
+  background: var(--bg-card);
+  padding: 25px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 100px; /* Отступ сверху при скролле */
+  border: 1px solid var(--border);
+}
+
+.booking-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  background-color: #fff;
+  margin-top: 5px;
+  cursor: pointer;
+  outline: none;
+}
+.booking-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.slot-btn {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 10px 5px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  font-weight: 500;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.slot-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* =========================================
+   10. Мои Визиты (My Appointments)
+   ========================================= */
+.appointment-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border);
+  transition: transform 0.2s;
+}
+
+.appointment-card:hover {
+  transform: scale(1.005);
+  box-shadow: var(--shadow-md);
+}
+
+.app-date-box {
+  background: #f3f4f6;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  margin-right: 25px;
+  min-width: 80px;
+  border: 1px solid #e5e7eb;
+}
+
+.app-day {
+  display: block;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--text-main);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.app-time {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.app-details h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.2rem;
+  color: var(--text-main);
+}
+
+.app-address {
+  color: var(--text-muted);
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+}
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-scheduled, .status-pending { background: #ecfdf5; color: #047857; }
+.status-cancelled { background: #fef2f2; color: #b91c1c; }
+.status-completed { background: #f3f4f6; color: #374151; }
+
+/* =========================================
+   11. Форма входа (Auth)
+   ========================================= */
+.auth-container {
+  max-width: 400px;
+  margin: 60px auto;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-field {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Анимация загрузки */
+.loader {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+}

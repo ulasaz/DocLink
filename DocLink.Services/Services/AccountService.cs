@@ -8,25 +8,31 @@ namespace DocLink.Services.Services;
 public class AccountService : IAccountService
 {
     private readonly UserManager<Account> _userManager;
-    private readonly SignInManager<Account> _signInManager;
+    private readonly IAccountFactoryProvider _factoryProvider;
+    private readonly ITokenService _tokenService;
 
-    public AccountService(UserManager<Account> userManager, SignInManager<Account> signInManager)
+    public AccountService(UserManager<Account> userManager, SignInManager<Account> signInManager, IAccountFactoryProvider factoryProvider, ITokenService tokenService)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
+        _factoryProvider = factoryProvider;
+        _tokenService = tokenService;
     }
 
     public async Task<RegistrationResponseModel> RegisterAsync(RegistrationRequestModel requestModel)
     {
-        var account = new Account
-        {
-            FirstName = requestModel.FirstName,
-            LastName = requestModel.LastName,
-            Email = requestModel.Email,
-            UserName = requestModel.Email
-        };
+        var factory = _factoryProvider.GetFactory(requestModel.Role);
+        var account = factory.Create(
+            requestModel.FirstName,
+            requestModel.LastName,
+            requestModel.Email
+        );
 
         var result = await _userManager.CreateAsync(account, requestModel.Password);
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(account, requestModel.Role.ToLower());
+            return new RegistrationResponseModel { IsSuccessful = true };
+        }
         
         if (!result.Succeeded)
         {
@@ -44,16 +50,39 @@ public class AccountService : IAccountService
         if(account is null)
             return new LoginResponseModel { Errors = ["Invalid login attempt"] };
 
-        var result = await _signInManager.PasswordSignInAsync(
-            account, 
-            loginRequestModel.Password,
-            isPersistent: false,   
-            lockoutOnFailure: false 
-        );
-        
-        if (!result.Succeeded)
-            return new LoginResponseModel { Errors = ["Invalid login attempt"], IsSuccessful = false};
+        var isPasswordValid = await _userManager.CheckPasswordAsync(account, loginRequestModel.Password);
+    
+        if (!isPasswordValid)
+            return new LoginResponseModel { Errors = ["Invalid login attempt"], IsSuccessful = false };
+        var token = await _tokenService.GenerateJwtToken(account);
+        return new LoginResponseModel { IsSuccessful = true, Token = token };
+    }
 
-        return new LoginResponseModel {IsSuccessful = true, Token = "TOKEN"};
+    public async Task<Account> GetAccountByEmail(string email)
+    {
+        return await _userManager.FindByEmailAsync(email) ?? throw new InvalidOperationException();
+    }
+
+    public async Task<PatientProfileDto> GetPatientProfileAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) 
+            throw new Exception("User not found");
+
+        var roles = await _userManager.GetRolesAsync(user);
+        
+        if (!roles.Contains("Patient"))
+        {
+            throw new Exception("You are not a patient");
+        }
+        
+        return new PatientProfileDto
+        {
+            Id = user.Id,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber ?? ""
+        };
     }
 }

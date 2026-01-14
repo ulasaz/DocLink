@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.Core", "DocLink.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.UnitTests", "DocLink.UnitTests\DocLink.UnitTests.csproj", "{F422418D-3A7D-4A73-B564-6A1764F9A17A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocLink.IntegrationTests", "DocLink.IntegrationTests\DocLink.IntegrationTests.csproj", "{94DA9488-7C63-4254-A67C-0618EE7AAB58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{F422418D-3A7D-4A73-B564-6A1764F9A17A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F422418D-3A7D-4A73-B564-6A1764F9A17A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F422418D-3A7D-4A73-B564-6A1764F9A17A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94DA9488-7C63-4254-A67C-0618EE7AAB58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DA9488-7C63-4254-A67C-0618EE7AAB58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DA9488-7C63-4254-A67C-0618EE7AAB58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DA9488-7C63-4254-A67C-0618EE7AAB58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
