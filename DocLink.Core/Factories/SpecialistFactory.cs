@@ -1,7 +1,7 @@
 using DocLink.Core.Models;
 
 namespace DocLink.Core.Factories;
-
+   
 public class SpecialistFactory : AccountFactory
 {
     public override Account Create(string firstName, string lastName, string email)
@@ -11,5 +11,5 @@ public class SpecialistFactory : AccountFactory
             LastName = lastName,
             Email = email,
             UserName = email
-        };
+        };               
 }
