@@ -15,12 +15,10 @@ namespace DocLink.WebAPI.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
-    private readonly TokenService _tokenService;
 
-    public AccountController(IAccountService accountService, TokenService tokenService)
+    public AccountController(IAccountService accountService)
     {
         _accountService = accountService;
-        _tokenService = tokenService;
     }
     
       [HttpPost("register")]
@@ -28,6 +26,10 @@ public class AccountController : ControllerBase
     {
         if (requestModel == null)
             return BadRequest(); 
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState); 
+        }
         
         var result = await _accountService.RegisterAsync(requestModel);
 

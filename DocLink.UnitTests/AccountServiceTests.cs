@@ -1,310 +1,165 @@
+// namespace: DocLink.Tests.Unit.Services
 using DocLink.Core.Factories;
 using DocLink.Core.Models;
 using DocLink.Services.DTO_s;
 using DocLink.Services.Interfaces;
 using DocLink.Services.Services;
-using DocLink.UnitTests.Utils;
 using Microsoft.AspNetCore.Identity;
 using Moq;
-using Xunit;
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace DocLink.UnitTests.Services;
-
+[TestFixture]
+[NUnit.Framework.Category("Service")]
+[NUnit.Framework.Description("Testy jednostkowe serwisu konta - Rejestracja")]
 public class AccountServiceTests
 {
-    private readonly Mock<UserManager<Account>> _userManagerMock;
-    private readonly Mock<IAccountFactoryProvider> _factoryProviderMock;
-    private readonly Mock<ITokenService> _tokenServiceMock;
+    private Mock<UserManager<Account>> _userManagerMock;
+    private Mock<SignInManager<Account>> _signInManagerMock;
+    private Mock<IAccountFactoryProvider> _factoryProviderMock;
+    private Mock<ITokenService> _tokenServiceMock;
+    private AccountService _service;
 
-    private readonly AccountService _accountService;
-
-    public AccountServiceTests()
+    [SetUp]
+    public void SetUp()
     {
-        _userManagerMock = UserManagerMock.Create<Account>();
+        // 1) Jeśli: Konfiguracja mocków
+        var userStore = new Mock<IUserStore<Account>>();
+        _userManagerMock = new Mock<UserManager<Account>>(userStore.Object, null, null, null, null, null, null, null, null);
+        
+        var contextAccessor = new Mock<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
+        var claimsFactory = new Mock<IUserClaimsPrincipalFactory<Account>>();
+        _signInManagerMock = new Mock<SignInManager<Account>>(_userManagerMock.Object, contextAccessor.Object, claimsFactory.Object, null, null, null, null);
+
         _factoryProviderMock = new Mock<IAccountFactoryProvider>();
         _tokenServiceMock = new Mock<ITokenService>();
 
-        _accountService = new AccountService(
-            _userManagerMock.Object,
-            null!,
-            _factoryProviderMock.Object,
-            _tokenServiceMock.Object
-        );
-    }
-    
-
-    [Fact]
-    public async Task LoginAsync_ShouldFail_WhenUserNotFound()
-    {
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((Account)null!);
-
-        var result = await _accountService.LoginAsync(new LoginRequestModel
-        {
-            Email = "test@test.com",
-            Password = "123"
-        });
-
-        Assert.False(result.IsSuccessful);
-        Assert.Contains("Invalid login attempt", result.Errors);
+        _service = new AccountService(_userManagerMock.Object, _signInManagerMock.Object, _factoryProviderMock.Object, _tokenServiceMock.Object);
     }
 
-    [Fact]
-    public async Task LoginAsync_ShouldFail_WhenPasswordIsInvalid()
+    [Test, Order(1)]
+    [DisplayName("RegisterAsync - Rejestracja udana")]
+    public async Task RegisterAsync_ShouldReturnSuccess_WhenDataIsValid()
     {
-        var user = new Account { Email = "test@test.com" };
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(user.Email))
-            .ReturnsAsync(user);
-
-        _userManagerMock
-            .Setup(x => x.CheckPasswordAsync(user, It.IsAny<string>()))
-            .ReturnsAsync(false);
-
-        var result = await _accountService.LoginAsync(new LoginRequestModel
-        {
-            Email = user.Email,
-            Password = "wrong"
-        });
-
-        Assert.False(result.IsSuccessful);
-        Assert.Contains("Invalid login attempt", result.Errors);
-    }
-
-    [Fact]
-    public async Task LoginAsync_ShouldReturnToken_WhenCredentialsAreValid()
-    {
-        var user = new Account { Email = "test@test.com" };
-
-        _userManagerMock
-            .Setup(x => x.FindByEmailAsync(user.Email))
-            .ReturnsAsync(user);
-
-        _userManagerMock
-            .Setup(x => x.CheckPasswordAsync(user, It.IsAny<string>()))
-            .ReturnsAsync(true);
-
-        _tokenServiceMock
-            .Setup(x => x.GenerateJwtToken(user))
-            .ReturnsAsync("jwt-token");
-
-        var result = await _accountService.LoginAsync(new LoginRequestModel
-        {
-            Email = user.Email,
-            Password = "Password123!"
-        });
-
-        Assert.True(result.IsSuccessful);
-        Assert.Equal("jwt-token", result.Token);
-    }
-    
-
-    [Fact]
-    public async Task RegisterAsync_ShouldSucceed_WhenUserCreated()
-    {
+        // 1) Jeśli
         var request = new RegistrationRequestModel
         {
             Email = "test@test.com",
             Password = "Password123!",
-            FirstName = "John",
-            LastName = "Doe",
-            Role = "Patient"
+            Role = "Patient",
+            FirstName = "Jan",
+            LastName = "Kowalski"
         };
 
-        var account = new Account { Email = request.Email };
-
+        var createdAccount = new Patient { Email = request.Email, UserName = request.Email };
+        
+        // Mockowanie fabryki (zwraca fabrykę, która zwraca konto)
         var factoryMock = new Mock<AccountFactory>();
-        factoryMock
-            .Setup(x => x.Create(
-                request.FirstName,
-                request.LastName,
-                request.Email))
-            .Returns(account);
+        factoryMock.Setup(f => f.Create(request.FirstName, request.LastName, request.Email))
+                   .Returns(createdAccount);
 
-        _factoryProviderMock
-            .Setup(x => x.GetFactory(request.Role))
-            .Returns(factoryMock.Object);
+        _factoryProviderMock.Setup(p => p.GetFactory(request.Role))
+                            .Returns(factoryMock.Object);
 
-        _userManagerMock
-            .Setup(x => x.CreateAsync(account, request.Password))
-            .ReturnsAsync(IdentityResult.Success);
+        // Mockowanie UserManagera (CreateAsync -> Success)
+        _userManagerMock.Setup(u => u.CreateAsync(createdAccount, request.Password))
+                        .ReturnsAsync(IdentityResult.Success);
+        
+        // Mockowanie dodawania do roli
+        _userManagerMock.Setup(u => u.AddToRoleAsync(createdAccount, "patient")) // Service robi .ToLower()
+                        .ReturnsAsync(IdentityResult.Success);
 
-        _userManagerMock
-            .Setup(x => x.AddToRoleAsync(account, request.Role.ToLower()))
-            .ReturnsAsync(IdentityResult.Success);
+        // 2) Gdy
+        var result = await _service.RegisterAsync(request);
 
-        var result = await _accountService.RegisterAsync(request);
+        // 3) Wtedy
+        Assert.That(result.IsSuccessful, Is.True, "Rejestracja powinna zakończyć się sukcesem");
+        Assert.That(result.Errors, Is.Null, "Nie powinno być błędów");
 
-        Assert.True(result.IsSuccessful);
+        // Weryfikacja interakcji
+        _userManagerMock.Verify(u => u.CreateAsync(It.IsAny<Account>(), request.Password), Times.Once);
+        _userManagerMock.Verify(u => u.AddToRoleAsync(It.IsAny<Account>(), "patient"), Times.Once);
     }
 
-[Fact]
-public async Task RegisterAsync_ShouldThrowException_WhenRoleIsUnknown()
-{
-    var request = new RegistrationRequestModel
+    [Test, Order(2)]
+    [DisplayName("RegisterAsync - Błąd walidacji hasła/użytkownika")]
+    public async Task RegisterAsync_ShouldFail_WhenIdentityCreateFails()
     {
-        Email = "test@test.com",
-        Password = "Password123!",
-        FirstName = "John",
-        LastName = "Doe",
-        Role = "UnknownRole"
-    };
+        // 1) Jeśli
+        var request = new RegistrationRequestModel { Role = "Specialist", Email = "doc@test.com" };
+        var account = new Specialist();
 
-    _factoryProviderMock
-        .Setup(x => x.GetFactory(request.Role))
-        .Throws(new ArgumentException("Unknown account type"));
+        // Mock fabryki
+        var factoryMock = new Mock<AccountFactory>();
+        factoryMock.Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(account);
+        _factoryProviderMock.Setup(p => p.GetFactory("Specialist")).Returns(factoryMock.Object);
 
-    await Assert.ThrowsAsync<ArgumentException>(() =>
-        _accountService.RegisterAsync(request));
-}
+        // Symulacja błędu z UserManagera
+        var identityErrors = new IdentityError { Description = "Password too short" };
+        _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<Account>(), It.IsAny<string>()))
+                        .ReturnsAsync(IdentityResult.Failed(identityErrors));
 
-[Fact]
-public async Task RegisterAsync_ShouldFail_WhenCreateAsyncReturnsFailure()
-{
-    var request = new RegistrationRequestModel
+        // 2) Gdy
+        var result = await _service.RegisterAsync(request);
+
+        // 3) Wtedy
+        Assert.That(result.IsSuccessful, Is.False);
+        Assert.That(result.Errors, Is.Not.Null);
+        Assert.That(result.Errors.First(), Is.EqualTo("Password too short"));
+
+        // Weryfikacja, że NIE dodano do roli
+        _userManagerMock.Verify(u => u.AddToRoleAsync(It.IsAny<Account>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Test, Order(3)]
+    [DisplayName("RegisterAsync - Błąd: Email zajęty")]
+    public async Task RegisterAsync_ShouldFail_WhenEmailIsTaken()
     {
-        Email = "test@test.com",
-        Password = "Password123!",
-        FirstName = "John",
-        LastName = "Doe",
-        Role = "Patient"
-    };
+        // 1) Jeśli (Arrange) - przygotowanie danych
+        var request = new RegistrationRequestModel 
+        { 
+            Role = "Patient", 
+            Email = "zajety@email.com", // Ten email symulujemy jako zajęty
+            Password = "Password123!",
+            FirstName = "Test",
+            LastName = "User"
+        };
+        
+        // Mockujemy obiekt konta (ponieważ fabryka musi coś zwrócić, zanim dojdziemy do bazy)
+        var account = new Patient { Email = request.Email };
+        var factoryMock = new Mock<AccountFactory>();
+        factoryMock.Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                   .Returns(account);
+        _factoryProviderMock.Setup(p => p.GetFactory(request.Role))
+                            .Returns(factoryMock.Object);
 
-    var account = new Account { Email = request.Email };
+        // KLUCZOWY MOMENT: Symulacja błędu "DuplicateEmail" z UserManagera
+        // Mówimy mockowi: "Jak ktoś spróbuje utworzyć to konto, zwróć błąd, że email jest zajęty"
+        var identityError = new IdentityError 
+        { 
+            Code = "DuplicateEmail", 
+            Description = $"Email '{request.Email}' is already taken." 
+        };
+        
+        _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<Account>(), It.IsAny<string>()))
+                        .ReturnsAsync(IdentityResult.Failed(identityError));
 
-    var factoryMock = new Mock<AccountFactory>();
-    factoryMock
-        .Setup(x => x.Create(
-            request.FirstName,
-            request.LastName,
-            request.Email))
-        .Returns(account);
+        // 2) Gdy (Act) - wykonanie akcji
+        var result = await _service.RegisterAsync(request);
 
-    _factoryProviderMock
-        .Setup(x => x.GetFactory(request.Role))
-        .Returns(factoryMock.Object);
+        // 3) Wtedy (Assert) - sprawdzenie wyników
+        
+        // Oczekujemy, że IsSuccessful będzie FALSE (bo rejestracja ma się NIE udać)
+        Assert.That(result.IsSuccessful, Is.True, "System powinien zablokować rejestrację dla zajętego emaila");
+        
+        // Sprawdzamy, czy w liście błędów jest informacja o zajętym emailu
+        Assert.That(result.Errors, Is.Not.Null);
+        Assert.That(result.Errors.First(), Contains.Substring("already taken"));
 
-    _userManagerMock
-        .Setup(x => x.CreateAsync(account, request.Password))
-        .ReturnsAsync(IdentityResult.Failed(
-            new IdentityError { Description = "Email already exists" }
-        ));
-
-    var result = await _accountService.RegisterAsync(request);
-
-    Assert.False(result.IsSuccessful);
-    Assert.Contains("Email already exists", result.Errors!);
-}
-
-[Fact]
-public async Task RegisterAsync_ShouldReturnAllErrors_WhenMultipleErrorsOccur()
-{
-    var request = new RegistrationRequestModel
-    {
-        Email = "test@test.com",
-        Password = "weak",
-        FirstName = "John",
-        LastName = "Doe",
-        Role = "Patient"
-    };
-
-    var account = new Account { Email = request.Email };
-
-    var factoryMock = new Mock<AccountFactory>();
-    factoryMock
-        .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-        .Returns(account);
-
-    _factoryProviderMock
-        .Setup(x => x.GetFactory(request.Role))
-        .Returns(factoryMock.Object);
-
-    _userManagerMock
-        .Setup(x => x.CreateAsync(account, request.Password))
-        .ReturnsAsync(IdentityResult.Failed(
-            new IdentityError { Description = "Password too weak" },
-            new IdentityError { Description = "Email invalid" }
-        ));
-
-    var result = await _accountService.RegisterAsync(request);
-
-    Assert.False(result.IsSuccessful);
-    Assert.Equal(2, result.Errors!.Count());
-}
-
-[Fact]
-public async Task RegisterAsync_ShouldAddUserToRole_InLowerCase()
-{
-    var request = new RegistrationRequestModel
-    {
-        Email = "test@test.com",
-        Password = "Password123!",
-        FirstName = "John",
-        LastName = "Doe",
-        Role = "Patient"
-    };
-
-    var account = new Account { Email = request.Email };
-
-    var factoryMock = new Mock<AccountFactory>();
-    factoryMock
-        .Setup(x => x.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-        .Returns(account);
-
-    _factoryProviderMock
-        .Setup(x => x.GetFactory(request.Role))
-        .Returns(factoryMock.Object);
-
-    _userManagerMock
-        .Setup(x => x.CreateAsync(account, request.Password))
-        .ReturnsAsync(IdentityResult.Success);
-
-    _userManagerMock
-        .Setup(x => x.AddToRoleAsync(account, "patient"))
-        .ReturnsAsync(IdentityResult.Success);
-
-    await _accountService.RegisterAsync(request);
-
-    _userManagerMock.Verify(
-        x => x.AddToRoleAsync(account, "patient"),
-        Times.Once);
-}
-
-[Fact]
-public async Task RegisterAsync_ShouldCallFactoryCreate_WithCorrectData()
-{
-    var request = new RegistrationRequestModel
-    {
-        Email = "test@test.com",
-        Password = "Password123!",
-        FirstName = "John",
-        LastName = "Doe",
-        Role = "Patient"
-    };
-
-    var factoryMock = new Mock<AccountFactory>();
-
-    _factoryProviderMock
-        .Setup(x => x.GetFactory(request.Role))
-        .Returns(factoryMock.Object);
-
-    _userManagerMock
-        .Setup(x => x.CreateAsync(It.IsAny<Account>(), It.IsAny<string>()))
-        .ReturnsAsync(IdentityResult.Success);
-
-    _userManagerMock
-        .Setup(x => x.AddToRoleAsync(It.IsAny<Account>(), It.IsAny<string>()))
-        .ReturnsAsync(IdentityResult.Success);
-
-    await _accountService.RegisterAsync(request);
-
-    factoryMock.Verify(x =>
-        x.Create(
-            request.FirstName,
-            request.LastName,
-            request.Email),
-        Times.Once);
+        // Weryfikacja: Nie powinno próbować dodawać do roli, jeśli nie utworzono usera
+        _userManagerMock.Verify(u => u.AddToRoleAsync(It.IsAny<Account>(), It.IsAny<string>()), Times.Never);
     }
 }

@@ -16,16 +16,23 @@
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b7e19f4d_002Ddceb_002D463e_002Db9f1_002D0885091013d6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="RegisterUserAsync_ShouldReturnSuccessfulResponse_WhenUserCreated" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b7e19f4d_002Ddceb_002D463e_002Db9f1_002D0885091013d6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="RegisterUserAsync_ShouldReturnSuccessfulResponse_WhenUserCreated" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::FD9CF5A9-2E18-42CA-903E-F0A334AD76B3::net9.0::DocLink.Tests.AccountServiceTests.RegisterUserAsync_ShouldReturnSuccessfulResponse_WhenUserCreated&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::F422418D-3A7D-4A73-B564-6A1764F9A17A::net9.0::AccountServiceTests.RegisterAsync_ShouldFail_WhenEmailIsTaken&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ee8ef6fe_002Df420_002D45cd_002D9f24_002D1ede667c2dec/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;DocLink.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ea1114b4_002D3eaf_002D47bb_002Db586_002D00db39252268/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="RegisterAsync_ShouldFail_WhenEmailIsTaken" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::F422418D-3A7D-4A73-B564-6A1764F9A17A::net9.0::AccountServiceTests.RegisterAsync_ShouldFail_WhenEmailIsTaken&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ee8ef6fe_002Df420_002D45cd_002D9f24_002D1ede667c2dec/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;DocLink.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Or&gt;
     &lt;Project Location="/Users/wlad/RiderProjects/DocLink/DocLink.UnitTests" Presentation="&amp;lt;DocLink.UnitTests&amp;gt;" /&gt;
     &lt;TestAncestor&gt;
       &lt;TestId&gt;xUnit::94DA9488-7C63-4254-A67C-0618EE7AAB58::net9.0::DocLink.IntegrationTests.Repositories.SpecialistRepositoryTests&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::94DA9488-7C63-4254-A67C-0618EE7AAB58::net9.0::DocLink.IntegrationTests.Repositories.AppointmentRepositoryTests&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::94DA9488-7C63-4254-A67C-0618EE7AAB58::net9.0::DocLink.IntegrationTests.Services.AccountServiceIntegrationTests&lt;/TestId&gt;
     &lt;/TestAncestor&gt;
   &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String>

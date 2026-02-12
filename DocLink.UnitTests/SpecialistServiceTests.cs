@@ -4,9 +4,6 @@ using DocLink.Services.DTO_s;
 using DocLink.Services.Services;
 using Moq;
 using Xunit;
-
-namespace DocLink.UnitTests.Services;
-
 public class SpecialistServiceTests
 {
     private readonly Mock<ISpecialistRepository> _specialistRepoMock;

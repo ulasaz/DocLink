@@ -17,7 +17,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://doclink-api-cxeueybvaphjgffy.francecentral-01.azurewebsites.net/api";
 
 // --- Helpers ---
 function parseJwt(token) {
@@ -152,8 +152,21 @@ const LoginPage = ({ role, onLoginSuccess }) => {
                 <h2 style={{marginTop:0}}>{isLogin ? 'Login' : 'Register'} ({role})</h2>
                 <form onSubmit={handleSubmit} className="auth-form">
                     {!isLogin && <><input className="input-field" placeholder="First Name" value={formData.firstName} onChange={e=>setFormData({...formData, firstName:e.target.value})} /><input className="input-field" placeholder="Last Name" value={formData.lastName} onChange={e=>setFormData({...formData, lastName:e.target.value})} /></>}
-                    <input className="input-field" placeholder="Email" value={formData.email} onChange={e=>setFormData({...formData, email:e.target.value})} />
-                    <input className="input-field" type="password" placeholder="Password" value={formData.password} onChange={e=>setFormData({...formData, password:e.target.value})} />
+                    <input
+                        id="email"
+                        className="input-field"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={e=>setFormData({...formData, email:e.target.value})}
+                    />
+                    <input
+                        id="password"
+                        className="input-field"
+                        type="password"
+                        placeholder="Password"
+                        value={formData.password}
+                        onChange={e=>setFormData({...formData, password:e.target.value})}
+                    />
                     {!isLogin && role === 'doctor' && <><input className="input-field" placeholder="Spec" value={formData.specialization} onChange={e=>setFormData({...formData, specialization:e.target.value})} /><input className="input-field" placeholder="License" value={formData.licenseId} onChange={e=>setFormData({...formData, licenseId:e.target.value})} /></>}
                     <button className="action-btn" style={{marginTop:'10px'}}>{isLogin ? 'Login' : 'Register'}</button>
                 </form>
